@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>基础串联电路最值计算器</title>
+<style>
+#component input {margin-bottom:35px;}
+fieldset {font-size:1.2em;}
+#calculate {font-size:1.3em;;}
+#calculate input[type="number"] {vertical-align:middle;width:50px;height:20px;margin-left:5px;margin-right:5px;}
+#consdisplayer {text-align:center;font-size=1.3em;}
+#consdisplayer {margin-bottom=20px}
+.calB {
+	width:300px;
+	text-align:center;
+	height:50px;
+	margin-left:170px;
+	margin-right:100px;
+	cursor: pointer;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+	border: 2px solid #e7e7e7;
+	}
+.calB:hover {
+    background-color:#e7e7e7;
+	}
+</style>
+<script type="text/javascript">
+	var checkedCount = 0;
+
+	function checkCount(obj) {
+		if (obj.checked === true) {
+			if (checkedCount >= 2) {
+				alert("最多只能选择2个已知值");
+				return false;
+			}
+			checkedCount++;
+		} else {
+			checkedCount--;
+		}
+
+		return true
+
+	}
+
+	function toVaild() {
+		if (checkedCount === 0) {
+			alert("请选择至少一种类型哦");
+			return false;
+		}
+		return true;
+	}
+	
+    function get_radio(boxname){
+    var obj = document.getElementsByName(boxname);
+      for(i=0;i<boxname.length;i++){
+ 
+          if(obj[i].checked){
+              return obj[i].value;
+          }
+		  }
+		  }
+	function adj(valnum){
+		outpNum=Math.round(valnum * 10000)/10000
+		return outpNum;
+		}
+	function judge(A1,V1,V2){
+		document.getElementById("consdisplayer").innerHTML = "<p id='c1'><p id='c1-I'></p><p id='c1-U1'></p><p id='c1-U2'></p></p><p id='c2'><p id='c2-I'></p><p id='c2-U1'></p><p id='c2-U2'></p></p><p id='c3'><p id='c3-I'></p><p id='c3-U1'></p><p id='c3-U2'></p></p><p id='c4'><p id='c4-I'></p><p id='c4-U1'></p><p id='c4-U2'></p></p><p id='c5'><p id='c5-I'></p><p id='c5-U1'></p><p id='c5-U2'></p></p><p id='c6'><p id='c6-I'></p><p id='c6-U1'></p><p id='c6-U2'></p></p><p id='c7'><p id='c7-I'></p><p id='c7-U1'></p><p id='c7-U2'></p></p><p id='c8'><p id='c8-I'></p><p id='c8-U1'></p><p id='c8-U2'></p></p>";
+		document.getElementById("I").innerHTML = "";
+		document.getElementById("U1").innerHTML = "";
+		document.getElementById("U2").innerHTML = "";			
+		var Imax = A1
+		var U1max = V1
+		var U2max = V2
+		var R1 = Number(document.getElementById("R1").value);
+		var R2 = Number(document.getElementById("R2").value);
+		var U = Number(document.getElementById("U").value);
+		var I2max = Number(document.getElementById("I2max").value);
+		if(Imax == -1){
+			if(U1max == -1){
+				if(U2max == -1){
+					a1mx = calcImax(0.6,3)
+					a1mn = calcImin(3)
+					writein(a1mx,a1mn,1,0.6,3,3)
+					a2mx = calcImax(0.6,3)				
+					a2mn = calcImin(15)
+					writein(a2mx,a2mn,2,0.6,3,15)
+					a3mx = calcImax(0.6,15)
+					a3mn = calcImin(3)
+					writein(a3mx,a3mn,3,0.6,15,3)
+					a4mx = calcImax(0.6,15)
+					a4mn = calcImin(15)
+					writein(a4mx,a4mn,4,0.6,15,15)
+					a5mx = calcImax(3,3)
+					a5mn = calcImin(3)
+					writein(a5mx,a5mn,5,3,3,3)
+					a6mx = calcImax(3,3)
+					a6mn = calcImin(15)
+					writein(a6mx,a6mn,6,3,3,15)
+					a7mx = calcImax(3,15)
+					a7mn = calcImin(3)
+					writein(a7mx,a7mn,7,3,15,3)
+					a8mx = calcImax(3,15)
+					a8mn = calcImin(15)
+					writein(a8mx,a8mn,8,3,15,15)
+					}
+				else{
+					a1mx = calcImax(0.6,3)
+					a1mn = calcImin(U2max)
+					writein(a1mx,a1mn,1,0.6,3,U2max)
+					a2mx = calcImax(0.6,15)
+					a2mn = calcImin(U2max)
+					writein(a2mx,a2mn,2,0.6,15,U2max)
+					a3mx = calcImax(3,3)
+					a3mn = calcImin(U2max)
+					writein(a3mx,a3mn,3,3,3,U2max)
+					a4mx = calcImax(3,15)
+					a4mn = calcImin(U2max)
+					writein(a4mx,a4mn,4,3,15,U2max)
+					}
+				}
+			else{
+				if(U2max == -1){
+					a1mx = calcImax(0.6,U1max)
+					a1mn = calcImin(3)
+					writein(a1mx,a1mn,1,0.6,U1max,3)
+					a2mx = calcImax(3,U1max)
+					a2mn = calcImin(3)
+					writein(a2mx,a2mn,2,3,U1max,3)
+					a3mx = calcImax(0.6,U1max)
+					a3mn = calcImin(15)
+					writein(a3mx,a3mn,3,0.6,U1max,15)
+					a4mx = calcImax(3,U1max)
+					a4mn = calcImin(15)
+					writein(a4mx,a4mn,4,3,U1max,15)
+					}
+				else{
+					a1mx = calcImax(0.6,U1max)
+					a1mn = calcImin(U2max)
+					writein(a1mx,a1mn,1,0.6,U1max,U2max)
+					a2mx = calcImax(3,U1max)
+					a2mn = calcImin(U2max)
+					writein(a2mx,a2mn,2,3,U1max,U2max)
+					}
+				}
+			}
+		else{
+			if(U1max == -1){
+				if(U2max == -1){
+					a1mx = calcImax(Imax,3)
+					a1mn = calcImin(3)
+					writein(a1mx,a1mn,1,Imax,3,3)
+					a2mx = calcImax(Imax,15)
+					a2mn = calcImin(3)
+					writein(a2mx,a2mn,2,Imax,15,3)
+					a3mx = calcImax(Imax,3)
+					a3mn = calcImin(15)
+					writein(a3mx,a3mn,3,Imax,3,15)
+					a4mx = calcImax(Imax,15)
+					a4mn = calcImin(15)
+					writein(a4mx,a4mn,4,Imax,15,15)
+					}
+				else{
+					a1mx = calcImax(Imax,3)
+					a1mn = calcImin(U2max)
+					writein(a1mx,a1mn,1,Imax,3,U2max)
+					a2mx = calcImax(Imax,15)
+					a2mn = calcImin(U2max)
+					writein(a2mx,a2mn,2,Imax,15,U2max)
+					}
+				}
+			else{
+				if(U2max == -1){
+					a1mx = calcImax(Imax,U1max)
+					a1mn = calcImin(3)
+					writein(a1mx,a1mn,1,Imax,U1max,3)
+					a2mx = calcImax(Imax,U1max)
+					a2mn = calcImin(15)
+					writein(a2mx,a2mn,2,Imax,U1max,15)
+					}
+				else{
+					a1mx = calcImax(Imax,U1max)
+					a1mn = calcImin(U2max)
+					aU1min = a1mn*R1
+					aU1max = a1mx*R1
+					aU2min = U-aU1max
+					aU2max = U-aU1min
+					delI=a1mx-a1mn
+					delU=aU1max-aU1min
+					if(a1mx>a1mn){
+						document.getElementById("I").innerHTML = adj(a1mn)+"A≤I≤"+adj(a1mx)+"A，ΔI="+adj(delI)+"A";
+						document.getElementById("U1").innerHTML = adj(aU1min)+"V≤U₁≤"+adj(aU1max)+"V，ΔU="+adj(delU)+"V";
+						document.getElementById("U2").innerHTML = adj(aU2min)+"V≤U₂≤"+adj(aU2max)+"V，ΔU="+adj(delU)+"V";				
+						}
+					else if(a1mx == a1mn){
+						document.getElementById("I").innerHTML = "I="+adj(a1mx)+"A，ΔI=0A";
+						document.getElementById("U1").innerHTML = "U₁="+adj(aU1max)+"V，ΔU=0V";
+						document.getElementById("U2").innerHTML = "U₂="+adj(aU2max)+"V，ΔU=0V";		
+						}
+					else{
+						document.getElementById("I").innerHTML = "Imax"+adj(a1mx)+"A＜Imin"+adj(a1mn)+"A，条件不成立,舍";						
+						}
+					}
+				}
+			}
+		}
+	function writein(l,m,n,o,p,q){
+		var R1 = Number(document.getElementById("R1").value);
+		var R2 = Number(document.getElementById("R2").value);
+		var U = Number(document.getElementById("U").value);
+		var wmx =l
+		var wmn =m
+		var cid = "c"+n
+		var iid = cid+"-I"
+		var u1id = cid+"-U1"
+		var u2id = cid+"-U2"
+		var ir = o
+		var u1r = p
+		var u2r = q
+		if(ir==0){disIr="不存在"}
+		else{disIr="量程为0-"+ir+"A"}
+		if(u1r==0){disU1r="不存在"}
+		else{disU1r="量程为0-"+u1r+"V"}
+		if(u2r==0){disU2r="不存在"}
+		else{disU2r="量程为0-"+u2r+"V"}
+		document.getElementById(cid).innerHTML = "当A"+disIr+"，V₁(定值电阻两端)"+disU1r+"，V₂(滑动变阻器两端)"+disU2r+"时，"		
+		if(wmx>wmn){
+			wu1min = wmn*R1
+			wu1max = wmx*R1
+			wu2min = U-wu1max
+			wu2max = U-wu1min
+			delI=wmx-wmn
+			delU=wu1max-wu1min
+			document.getElementById(iid).innerHTML = adj(wmn)+"A≤I≤"+adj(wmx)+"A，ΔI="+adj(delI)+"A";
+			document.getElementById(u1id).innerHTML = adj(wu1min)+"V≤U₁≤"+adj(wu1max)+"V，ΔU="+adj(delU)+"V";
+			document.getElementById(u2id).innerHTML = adj(wu2min)+"V≤U₂≤"+adj(wu2max)+"V，ΔU="+adj(delU)+"V";
+			}
+		else if(wmx == wmn){
+			wu1max = wmx*R1
+			wu2min = U-wu1max
+			document.getElementById(iid).innerHTML = "I="+adj(wmx)+"A，ΔI=0A";
+			document.getElementById(u1id).innerHTML = "U₁="+adj(wu1max)+"V，ΔU=0V";
+			document.getElementById(u2id).innerHTML = "U₂="+adj(wu2min)+"V，ΔU=0V";
+			}
+		else{
+			document.getElementById(iid).innerHTML = "Imax"+adj(wmx)+"A＜Imin"+adj(wmn)+"A，条件不成立,舍";			
+			}
+		}
+	function calcImax(a,b){
+		var R1 = Number(document.getElementById("R1").value);
+		var R2 = Number(document.getElementById("R2").value);
+		var U = Number(document.getElementById("U").value);
+		var I2max = Number(document.getElementById("I2max").value);
+		var Imax = a
+		var U1max = b
+		if(Imax >= I2max){
+			var IImax = I2max;
+			}
+		else{
+			var IImax = Imax;
+			}	
+		var restrI = U/R1
+		if(IImax>restrI||IImax == 0){
+			var IIImax = restrI;
+			}
+		else{
+			var IIImax = IImax
+			}
+		var restrU1 = IIImax*R1
+		if(restrU1>U1max&&!(U1max == 0)){
+			var IIIImax = U1max/R1;
+			}
+		else{
+			var IIIImax = IIImax
+			}
+		return IIIImax;
+		}
+	function calcImin(c){
+		var R1 = Number(document.getElementById("R1").value);
+		var R2 = Number(document.getElementById("R2").value);
+		var U = Number(document.getElementById("U").value);
+		var U2max = c
+		var h = R1+R2
+		var i = U*R2
+		var hi = i/h
+		if(hi>U2max&&U2max>0){
+			var Umin = U-U2max
+			var Imin = Umin/R1
+			}
+		else{
+			var Imin=U/h		
+			}
+		return Imin;
+		}
+</script>
+</head>
+ 
+<body>
+	<div id="header">
+		<h1 style="margin-top:50px;margin-bottom:100px;text-align:center">串联电路简单最值计算器</h1></div>
+	</div>
+	<div id="consdisplayer">
+		<p id="c1" class="cc"><p id="c1-I"></p><p id="c1-U1"></p><p id="c1-U2"></p></p>
+		<p id="c2" class="cc"><p id="c2-I"></p><p id="c2-U1"></p><p id="c2-U2"></p></p>
+		<p id="c3" class="cc"><p id="c3-I"></p><p id="c3-U1"></p><p id="c3-U2"></p></p>
+		<p id="c4" class="cc"><p id="c4-I"></p><p id="c4-U1"></p><p id="c4-U2"></p></p>
+		<p id="c5" class="cc"><p id="c5-I"></p><p id="c5-U1"></p><p id="c5-U2"></p></p>
+		<p id="c6" class="cc"><p id="c6-I"></p><p id="c6-U1"></p><p id="c6-U2"></p></p>
+		<p id="c7" class="cc"><p id="c7-I"></p><p id="c7-U1"></p><p id="c7-U2"></p></p>
+		<p id="c8" class="cc"><p id="c8-I"></p><p id="c8-U1"></p><p id="c8-U2"></p></p>		
+	</div>
+	<div id="component" style="float:left;">
+		<fieldset style="margin-bottom:100px auto;margin-left:100px;width:450px;text-align:center;">
+			<legend style="margin-top:30px;margin-bottom:30px;">元件基本信息:</legend>
+			电源电压: <input type="number" name="firstname" style="width:40px;margin-left:10px;margin-right:10px;" id="U">V<br>
+			滑动变阻器最大电流: <input type="number" name="lastname" style="width:40px;margin-left:10px;margin-right:10px;" id="I2max">A(无限制填0)<br>
+			<b>电流表量程：</b><br>
+			<input type="radio" name="Ammm" checked="checked" value=0> 不存在电流表
+			<input type="radio" name="Ammm" value=-1> 量程不确定
+			<input type="radio" name="Ammm" value=0.6> 0-0.6A
+			<input type="radio" name="Ammm" value=3> 0-3A<br>
+			<b>定值电阻两端电压表量程:</b><br>
+			<input type="radio" name="Voltm1" checked="checked" value=0> 不存在电压表
+			<input type="radio" name="Voltm1" value=-1> 量程不确定
+			<input type="radio" name="Voltm1" value=3> 0-3V
+			<input type="radio" name="Voltm1" value=15> 0-15V<br>
+			<b>滑动变阻器两端电压表量程：</b><br>
+			<input type="radio" name="Voltm2" checked="checked" value=0> 不存在电压表
+			<input type="radio" name="Voltm2" value=-1> 量程不确定
+			<input type="radio" name="Voltm2" value=3> 0-3V
+			<input type="radio" name="Voltm2" value=15> 0-15V<br>
+		</fieldset>
+	</div>
+	<div id="calculate" style="margin-left:100px;float:left;">
+		<p><strong><em>请输入定值电阻阻值和滑动变阻器最大阻值</em></strong></p>
+        定值电阻阻值:
+		<input type="number" id="R1">Ω<br>
+        滑动变阻器最大阻值
+		<input type="number" id="R2">Ω<br>
+        电流变化量:
+		<p id="I"></p>
+        定值电阻两端电压变化量：
+		<p id="U1"></p>
+        滑动变阻器两端电压变化量：
+		<p id="U2"></p>
+		<hr>
+		<input type="button" value="计算" class="calB" onclick="judge(get_radio('Ammm'),get_radio('Voltm1'),get_radio('Voltm2'))">
+	</div>
+</body>
+ 
+</html>

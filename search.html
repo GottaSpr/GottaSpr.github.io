@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>网友都在比什么？</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      height: 100vh;
+      margin: 0;
+	  background: url("cr.webp") center/cover fixed;
+	  backdrop-filter: blur(5px) brightness(90%) contrast(100%);
+    }
+    
+    #search-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    #search-title {
+      font-size: 24px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+    
+    #search-bar {
+      width: 300px;
+      height: 30px;
+      margin-bottom: 10px;
+      padding: 5px;
+      border: 1px solid #777;
+      border-radius: 3px;
+      font-size: 14px;
+    }
+    
+    #search-mode {
+      width: 200px;
+      height: 30px;
+      margin-bottom: 10px;
+      padding: 5px;
+      border: 1px solid #777;
+      border-radius: 3px;
+      font-size: 14px;
+    }
+    
+    #search-button {
+      width: 120px;
+      height: 30px;
+      background-color: #4caf50;
+      color: #ffffff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    
+    #search-button:hover {
+      background-color: #45a049;
+    }
+    
+    #search-button:active {
+      transform: scale(0.95);
+    }
+    
+    #result-container {
+      margin-top: 20px;
+      max-width: 500px;
+      overflow-y: auto;
+      text-align: center;
+    }
+    
+    #result-container li {
+      list-style: none;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background-color: #f9f9f9;
+      margin-bottom: 5px;
+    }
+  
+    #result-container p {
+      list-style: none;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background-color: #f9f9f9;
+      margin-bottom: 5px;
+    }
+    
+	#sidebar {
+	  display: none;
+	  position: fixed;
+	  top: 0;
+	  left: 0;
+	  height: 100%;
+	  width: 250px;
+	  background-color: #ffffff;
+	  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+	  overflow-y: auto;
+	}
+
+	#sidebar-toggle {
+	  padding: 10px;
+	  background-color: #4caf50;
+	  color: #ffffff;
+	  cursor: pointer;
+	  font-size: 14px;
+	  transition: background-color 0.3s;
+	}
+
+	#sidebar-toggle:hover {
+	  background-color: #45a049;
+	}
+
+	#sidebar-toggle:active {
+	  transform: scale(0.95);
+	}
+
+	#sidebar-content {
+	  padding: 0;
+	  margin: 0;
+	  list-style: none;
+	  font-size: 14px;
+	}
+
+	#sidebar-content li {
+	  padding: 5px 10px;
+	  border-radius: 3px;
+	  background-color: #f9f9f9;
+	  margin-bottom: 5px;
+	}
+	#top-mentioned {
+	  margin-top: 10px;
+	  cursor: pointer;
+	  color: blue;
+	  text-decoration: underline;
+	  }
+	#about-button {
+	  position: relative;
+	  margin-top: 1px;
+	  color: blue;
+	  cursor: pointer;
+	  font-size: 14px;
+	  transition: opacity 0.3s;
+	  text-decoration: underline;
+	}
+
+	#about-button:hover {
+	  opacity: 0.8;
+	  text-decoration: none;
+	}
+  </style>
+</head>
+
+<body onload="changeSearchMode()">
+  <div id="search-container">
+    <h1 id="search-title">网友都在比什么</h1>
+    <input type="text" id="search-bar" placeholder="Enter keyword">
+    <select id="search-mode" onchange="changeSearchMode()" title="Search Mode">
+      <option value="entry-search">条目搜索</option>
+      <option value="related-search">关联搜索</option>
+    </select>
+    <button id="search-button" onclick="submitSearch()">Submit Search</button>
+	<p id="top-mentioned" onclick="showSidebar(),getTopMentionedElements()" >前100名搜索量</p>
+    <p id="about-button" onclick="showAbout()">这个网站是干啥的？</p>
+  </div>
+  
+  <div id="result-container"></div>
+  <div id="sidebar">
+  <div id="sidebar-toggle" onclick="showSidebar()">
+    关闭
+  </div>
+  <ul id="sidebar-content"></ul>
+</div>
+
+
+</body>
+</html>
+
+
+  <script>
+    function submitSearch() {
+      var keyword = document.getElementById('search-bar').value;
+      var searchMode = document.getElementById('search-mode').value;
+
+      if (searchMode === 'entry-search') {
+        fetch('data1.csv')
+          .then(response => response.text())
+          .then(data => {
+            var rows = data.split('\n');
+            var results = rows.filter(row => row.includes(keyword));
+
+            showResults(results);
+          })
+          .catch(error => console.log(error));
+      } else if (searchMode === 'related-search') {
+        fetch('data1.csv')
+          .then(response => response.text())
+          .then(data => {
+            var rows = data.split('\n');
+            var correspondingCount = {};
+
+            rows.forEach(row => {
+              var columns = row.split(',');
+
+              if (columns.length >= 2) {
+                var entry1 = columns[0];
+                var entry2 = columns[1];
+
+                if (entry1 && entry1.indexOf(keyword) !== -1) {
+                  if (entry2 in correspondingCount) {
+                    correspondingCount[entry2]++;
+                  } else {
+                    correspondingCount[entry2] = 1;
+                  }
+                } else if (entry2 && entry2.indexOf(keyword) !== -1) {
+                  if (entry1 in correspondingCount) {
+                    correspondingCount[entry1]++;
+                  } else {
+                    correspondingCount[entry1] = 1;
+                  }
+                }
+              }
+            });
+
+            var topRankedValues = Object.keys(correspondingCount).sort((a, b) => correspondingCount[b] - correspondingCount[a]).slice(0, 5);
+            var mostCommonValue = topRankedValues.join(',');
+            var valuesString = Object.keys(correspondingCount).join(',');
+
+            showRelatedResults(mostCommonValue, valuesString);
+          })
+          .catch(error => console.log(error));
+      }
+    }
+
+    function showResults(results) {
+      var resultContainer = document.getElementById('result-container');
+      resultContainer.innerHTML = '';
+
+      results.forEach(result => {
+        var listItem = document.createElement('li');
+        listItem.textContent = result;
+        resultContainer.appendChild(listItem);
+      });
+    }
+
+    function showRelatedResults(mostCommonValue, valuesString) {
+      var resultContainer = document.getElementById('result-container');
+      resultContainer.innerHTML = '';
+
+      var mostCommonItem = document.createElement('p');
+      mostCommonItem.textContent = `最频繁被比较对象: ${mostCommonValue}`;
+      resultContainer.appendChild(mostCommonItem);
+
+      var valuesItem = document.createElement('p');
+      valuesItem.textContent = `所有被比较对象: ${valuesString}`;
+      resultContainer.appendChild(valuesItem);
+    }
+
+    function changeSearchMode() {
+      var searchMode = document.getElementById('search-mode').value;
+      var resultContainer = document.getElementById('result-container');
+      resultContainer.innerHTML = '';
+
+      if (searchMode === 'entry-search') {
+        var listItem = document.createElement('li');
+        listItem.textContent = '条目检索模式on：模糊搜索含有该关键词的搜索条目';
+        resultContainer.appendChild(listItem);
+      } else if (searchMode === 'related-search') {
+        var listItem = document.createElement('li');
+        listItem.textContent = '关联搜索模式on：找出与关键词相比较的对象与最频繁者';
+        resultContainer.appendChild(listItem);
+      }
+    }
+	function getTopMentionedElements() {
+		  fetch('data1.csv')
+			.then(response => response.text())
+			.then(data => {
+			  var rows = data.split('\n');
+			  var mentionedCount = {};
+
+			  rows.forEach(row => {
+				var columns = row.split(',');
+
+				if (columns.length >= 2) {
+				  var column1 = columns[0].trim();
+				  var column2 = columns[1].trim();
+
+				  if (column1) {
+					if (column1 in mentionedCount) {
+					  mentionedCount[column1]++;
+					} else {
+					  mentionedCount[column1] = 1;
+					}
+				  }
+
+				  if (column2) {
+					if (column2 in mentionedCount) {
+					  mentionedCount[column2]++;
+					} else {
+					  mentionedCount[column2] = 1;
+					}
+				  }
+				}
+			  });
+
+			  var topMentionedValues = Object.keys(mentionedCount)
+				.sort((a, b) => mentionedCount[b] - mentionedCount[a])
+				.slice(0, 100);
+			  
+			  showSidebar(topMentionedValues, mentionedCount);
+			})
+			.catch(error => console.log(error));
+		}
+	  function showSidebar(topMentionedValues, mentionedCount) {
+		var sidebar = document.getElementById('sidebar');
+		var sidebarContent = document.getElementById('sidebar-content');
+
+		if (sidebar.style.display === 'none') {
+		  sidebar.style.display = 'block';
+
+		  // Create and append new content
+		  topMentionedValues.forEach((value, index) => {
+			var listItem = document.createElement('li');
+			listItem.textContent = `#${index + 1} ${value} ${mentionedCount[value]} times`;
+			sidebarContent.appendChild(listItem);
+		  });
+		} else {
+		  sidebar.style.display = 'none';
+		}
+	  }
+	function showAbout() {
+      if (confirm("基于从eitherchoice上爬取的近30000条(仍可增加)数据构建的搜索引擎。似乎在这里，网友们可以任由自己的想法涌现，也因此这些数据是网民成分的部分反映。搜索特定关键词，你能看到网友们自发创建的词云，这是一个个亚文化语言系统，在无尽的能指链中瞥见文化模式的真相。")) {
+        // Handle OK button click
+      } else {
+        // Handle Cancel button click
+      }
+    }
+  </script>
+</body>
+</html>
